@@ -1,0 +1,71 @@
+\documentclass[12pt]{report}
+
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage[pdftex]{graphicx}
+\usepackage{color}
+
+\newcommand\dashedrule{\mbox{%
+  \solidrule[2mm]\hspace{2mm}\solidrule[2mm]\hspace{2mm}\solidrule[2mm]}}
+
+\begin{document}
+\title{AA 545 Kinetic Modeling\\ Vlasov-Poisson PIC\\ Part 1}
+\author{Eder Sousa}
+\date{April 11th, 2013}
+\maketitle
+
+This report shows results of a computer code that evolves free streaming particles in phase space ($\mathbf{x}$, $\mathbf{v}_x$) 
+and in one dimension.
+Forces and collisions are ignored. The position is evolved and the velocity of each particle is constant. Each particle $i$ position evolution from time $n$ to time $n+1$ is given by
+\begin{equation}
+\mathbf{x}^{n+1}_i = \mathbf{x}^n_i + \mathbf{v}_idt.
+\end{equation}
+The code works with arbitrary number of particles. Periodic boundary conditions in the x-direction are implemented.
+The particle positions are randomly initialized using an uniform distribution between $x=[-2\pi, 2\pi]$ and the velocity is
+randomly initialized using a Maxwellian distribution $v_x = [-5, 5]$ with a FWHM of 2. The code is implemented in python.
+The total kinetic energy is calculated at each time step by
+\begin{equation}
+E_{tot} =  \frac{1}{2} m \sum_iv_i^2.
+\end{equation}
+
+\begin{figure}
+\centering
+\includegraphics[scale=0.8]{tracking000_.png}
+\caption{Position and velocity plots at $t=0$ using $N=512$ particles.}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[scale=0.8]{tracking008_.png}
+\caption{Position and velocity at $t=2\pi$ using $N=512$ particles.}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[scale=0.8]{tracking032_.png}
+\caption{Particle position and velocity at $t=8\pi$ using $N=512$ particles.}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[scale=0.8]{tracking020_128.png}
+\caption{Particle trajectory and velocity at $t=2\pi$ using $N=128$ particles.}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[scale=0.8]{KE_history.png}
+\caption{Kinetic energy history for different number of particle ({\bf{\color{blue}{N=128}}}, {\bf{\color{red}{N=512}}}, 
+{\bf{\color{green}{N=2048}}}, {\bf N=8192}) and for different time steps ({\bf $-$: dt=1.57}, {\bf $--$: dt=0.79}, {\bf $...$: dt=0.39}).}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[scale=0.8]{histogram_N8192_T6-28.png}
+\caption{Particle velocity histogram for $N=8192$ particles at $t=0$.}
+\end{figure}
+
+\end{document}
