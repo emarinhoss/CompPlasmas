@@ -62,7 +62,7 @@ def EfieldEnergy(E):
     
     N = size(E)
     EE = 0.0
-    for k in range(0,N):
+    for k in range(0,N-1):
         EE += E[k]*E[k]
         
     return EE
@@ -81,20 +81,24 @@ class createGrid:
             for n in range(0,2):
                 self.connect[k,n] = k+n
         
+        self.connect[npoints-2,1] = 0
+        
 def EfieldSolve(rho, grid):
     ii = complex(0,1)
+#    Efield = zeros(grid.gPoints)
+#    kx = linspace(-grid.gPoints/2,grid.gPoints/2-1,grid.gPoints)
     kx = linspace(0,grid.gPoints-1,grid.gPoints)
-    #kx = zeros(grid.gPoints)
-    #kx[0:grid.gPoints/2-1] = range(0,grid.gPoints/2-1)
-    #kx[grid.gPoints/2:grid.gPoints] = range(-grid.gPoints/2,0)
-    kx = 2.*pi/grid.xupper*kx
-    kx[0] = 1.e-6
+    kx = 2.*pi/(grid.xupper-grid.xlower)*kx
+    kx[kx==0] = 1.e-6
     
     rhofft = fftpack.fft(rho)
-    phi  = rhofft/(kx*kx)
-    Efft = ii*kx*phi
+    phi  = -rhofft/(kx*kx)
+    Efft = -ii*kx*phi
     
     E_x = fftpack.ifft(Efft)
+    
+#    Efield[0:grid.gPoints-1] = E_x.real
+#    Efield[grid.gPoints-1] = Efield[0]
     
     return E_x.real
     
@@ -112,8 +116,8 @@ def zerothOrderParticle(pos, grid):
         else:
             dens[grid.connect[el,1]] += 1.
             
-    dens[0] += dens[grid.gPoints-1]
-    dens[grid.gPoints-1] = dens[0]
+    #dens[0] += dens[grid.gPoints-1]
+    #dens[grid.gPoints-1] = dens[0]
     
     return dens
             
@@ -141,9 +145,14 @@ def firstOrderParticle(pos, grid):
     
     for k in range(0,N):
         el = int((pos[k]+grid.xupper)/grid.dx)
+        #print el
+        dens[grid.connect[el,0]] += abs(grid.grid[grid.connect[el,1]]-pos[k])/grid.dx
+        dens[grid.connect[el,1]] += abs(pos[k]-grid.grid[grid.connect[el,0]])/grid.dx
         
-        dens[grid.connect[el,0]] += (grid.grid[grid.connect[el,1]]-pos[k])/grid.dx
-        dens[grid.connect[el,1]] += (pos[k]-grid.grid[grid.connect[el,0]])/grid.dx
+    #dens[0] += dens[grid.gPoints-1]
+    #dens[grid.gPoints-1] = dens[0]
+        
+    return dens
         
 def firstOrderField(pos, Efield, grid):
     
@@ -157,3 +166,14 @@ def firstOrderField(pos, Efield, grid):
                     Efield[grid.connect[el,0]] + \
                     (pos[k]-grid.grid[grid.connect[el,0]])/grid.dx * \
                     Efield[grid.connect[el,1]]
+                    
+    return E_part
+    
+def SinosoidalVel(Amp, pos, phase):
+    N = size(pos)
+    v = zeros(N)
+    
+    for k in range(0,N):
+        v[k] = Amp*sin(pos[k]+phase)
+        
+    return v

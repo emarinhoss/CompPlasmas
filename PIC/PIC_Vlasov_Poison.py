@@ -21,14 +21,14 @@ from numpy import *
 # x domain limits and gridpoints
 xlower = -pi
 xupper = pi
-Ngrid  = 32
+Ngrid  = 512
 
 # v_x limits
 vlower = -5.
 vupper =  5.
 
 # number of particles
-N = 2
+N = 512
 
 # Particle mass and charge
 m = 1.0
@@ -38,12 +38,11 @@ q = 1.0
 fwhm = 2.
 
 # final time
-Tend = 16.*pi
-nsteps = 40
+Tend = 20.*pi
+nsteps = 200
 
 # Order of Particle weighting
-order = 0
-
+order = 1
 
 ####################################################################
 ###
@@ -54,15 +53,27 @@ order = 0
 ####################################################################
 # Create a grid
 grid = createGrid(xlower, xupper, Ngrid)
+tt = 1.e-3
 
 # Initialize random position and velocity
 stdev = fwhm/(2.*sqrt(2.*log(2.)))
 #pos, vel = Initialization(N, grid, stdev)
 
-pos = array([-pi/4., pi/4.])
-dum = linspace(xlower,xupper,N+2)
-neg = dum[1:1+N]
-vel = array([0., 0.])
+#pos = array([-pi/4.,pi/4.])
+pos1 = linspace(xlower,xupper,N)
+pos = concatenate((pos1,pos1))
+#pos1.append(pos1)
+
+#dum = linspace(xlower,xupper,N+2)
+#neg = dum[1:1+2*N]
+neg = linspace(xlower,xupper,N)
+speed = 0.1
+delta = 0.001
+vel1 = speed*ones(N) + SinosoidalVel(delta, pos1, 0.0)
+vel2 = -speed*ones(N) + SinosoidalVel(delta, pos1, pi)
+vel = concatenate((vel1,vel2))
+
+#vel = SinosoidalVel(0.0, pos)
 
 # Plot histogram of velocity distribution
 #VelocityHistogram(vel, N, Tend)
@@ -77,18 +88,21 @@ EE = zeros(nsteps)
 CreatePosVelPlot(pos, vel, 0, grid.xlower, grid.xupper, vlower, vupper)
 clf()
 
-## Advance solution
-for n in range(0, nsteps):
+if order == 1:
+    rho_n = firstOrderParticle(neg, grid)
+else:
+    rho_n = zerothOrderParticle(neg, grid)
+
+# Advance solution
+for n in range(0, 2):
     
     # Particle Weighting
     if order == 1:
         rho_p = firstOrderParticle(pos, grid)
-        rho_n = firstOrderParticle(neg, grid)
     else:
         rho_p = zerothOrderParticle(pos, grid)
-        rho_n = zerothOrderParticle(neg, grid)
         
-    rho = rho_n-rho_p
+    rho = rho_p - 2*rho_n
 
     # Field Solve
     Exj = EfieldSolve(rho, grid)
