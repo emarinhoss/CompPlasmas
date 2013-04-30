@@ -51,10 +51,15 @@ def VelocityHistogram(vx, N, Tend):
     savefig(histname, dpi=100)
     clf()
     
-def CreatePosVelPlot(pos, vel, n, xl, xu, vl, vu):
+def CreatePosVelPlot(pos, vel, E, r, n, xl, xu, vl, vu):
+    subplot(2,2,1)
     plot(pos, vel, '.b'), axis([xl,xu,vl,vu])
     xlabel("Position")
     ylabel("Velocity")
+    subplot(2,2,2)
+    plot(r,'-*')
+    subplot(2,2,4)
+    plot(E,'-o')
     figname = "tracking" +str('%03d' % n) + '_.png'
     savefig(figname, dpi=100)
 
@@ -81,7 +86,7 @@ class createGrid:
             for n in range(0,2):
                 self.connect[k,n] = k+n
         
-        self.connect[npoints-2,1] = 0
+        self.connect[0,0] = npoints-1
         
 def EfieldSolve(rho, grid):
     ii = complex(0,1)
@@ -116,8 +121,8 @@ def zerothOrderParticle(pos, grid):
         else:
             dens[grid.connect[el,1]] += 1.
             
-    #dens[0] += dens[grid.gPoints-1]
-    #dens[grid.gPoints-1] = dens[0]
+    dens[0] += dens[grid.gPoints-1]
+    dens[grid.gPoints-1] = dens[0]
     
     return dens
             

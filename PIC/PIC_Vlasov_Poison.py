@@ -21,14 +21,14 @@ from numpy import *
 # x domain limits and gridpoints
 xlower = -pi
 xupper = pi
-Ngrid  = 512
+Ngrid  = 32
 
 # v_x limits
 vlower = -5.
 vupper =  5.
 
 # number of particles
-N = 512
+N = 64
 
 # Particle mass and charge
 m = 1.0
@@ -53,27 +53,27 @@ order = 1
 ####################################################################
 # Create a grid
 grid = createGrid(xlower, xupper, Ngrid)
-tt = 1.e-3
 
 # Initialize random position and velocity
-stdev = fwhm/(2.*sqrt(2.*log(2.)))
+#stdev = fwhm/(2.*sqrt(2.*log(2.)))
 #pos, vel = Initialization(N, grid, stdev)
 
-#pos = array([-pi/4.,pi/4.])
-pos1 = linspace(xlower,xupper,N)
-pos = concatenate((pos1,pos1))
+dum = linspace(xlower,xupper,N+2)
+pos = dum[1:1+N]
+#pos1 = linspace(xlower,xupper,N)
+#pos = concatenate((pos1,pos1))
+#pos = array([0.0])
 #pos1.append(pos1)
 
-#dum = linspace(xlower,xupper,N+2)
-#neg = dum[1:1+2*N]
-neg = linspace(xlower,xupper,N)
-speed = 0.1
-delta = 0.001
-vel1 = speed*ones(N) + SinosoidalVel(delta, pos1, 0.0)
-vel2 = -speed*ones(N) + SinosoidalVel(delta, pos1, pi)
-vel = concatenate((vel1,vel2))
-
-#vel = SinosoidalVel(0.0, pos)
+neg = dum[1:1+N]
+#neg = linspace(xlower,xupper,N)
+#speed = 0.1
+#delta = 0.001
+#vel1 = speed*ones(N) + SinosoidalVel(delta, pos1, 0.0)
+#vel2 = -speed*ones(N) + SinosoidalVel(delta, pos1, pi)
+#vel = concatenate((vel1,vel2))
+#vel = array([-0. , 0.])
+vel = SinosoidalVel(0.01, pos, 0.0)
 
 # Plot histogram of velocity distribution
 #VelocityHistogram(vel, N, Tend)
@@ -85,7 +85,7 @@ KE = zeros(nsteps)
 EE = zeros(nsteps)
 
 ## Plot Initial conditions
-CreatePosVelPlot(pos, vel, 0, grid.xlower, grid.xupper, vlower, vupper)
+CreatePosVelPlot(pos, vel , zeros(Ngrid), zeros(Ngrid), 0, grid.xlower, grid.xupper, vlower, vupper)
 clf()
 
 if order == 1:
@@ -94,7 +94,7 @@ else:
     rho_n = zerothOrderParticle(neg, grid)
 
 # Advance solution
-for n in range(0, 2):
+for n in range(0, nsteps):
     
     # Particle Weighting
     if order == 1:
@@ -102,7 +102,7 @@ for n in range(0, 2):
     else:
         rho_p = zerothOrderParticle(pos, grid)
         
-    rho = rho_p - 2*rho_n
+    rho = -rho_p + rho_n
 
     # Field Solve
     Exj = EfieldSolve(rho, grid)
@@ -126,7 +126,7 @@ for n in range(0, 2):
     EE[n] = grid.dx*ee
     
     # Plot current solution
-    CreatePosVelPlot(pos, vel, n+1, grid.xlower, grid.xupper, vlower, vupper)
+    CreatePosVelPlot(pos, vel, rho, Exj, n+1, grid.xlower, grid.xupper, vlower, vupper)
     clf()
 
 DataOut = column_stack((time,KE,EE))
