@@ -86,17 +86,21 @@ class createGrid:
             for n in range(0,2):
                 self.connect[k,n] = k+n
         
-        self.connect[0,0] = npoints-1
+        #self.connect[0,0] = npoints-1
         
 def EfieldSolve(rho, grid):
     ii = complex(0,1)
 #    Efield = zeros(grid.gPoints)
 #    kx = linspace(-grid.gPoints/2,grid.gPoints/2-1,grid.gPoints)
-    kx = linspace(0,grid.gPoints-1,grid.gPoints)
-    kx = 2.*pi/(grid.xupper-grid.xlower)*kx
-    kx[kx==0] = 1.e-6
+    #kx = linspace(0,grid.gPoints-1,grid.gPoints)
+    #kx = 2.*pi/(grid.xupper-grid.xlower)*kx
+    #kx[kx==0] = 1.e-16
+    #print kx
     
     rhofft = fftpack.fft(rho)
+    kx = fftfreq(grid.gPoints, grid.dx)
+    kx = 2.*pi/(grid.xupper-grid.xlower)*kx
+    kx[kx==0] = 1.e-16
     phi  = -rhofft/(kx*kx)
     Efft = -ii*kx*phi
     

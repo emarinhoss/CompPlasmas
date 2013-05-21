@@ -73,7 +73,7 @@ neg = dum[1:1+N]
 #vel2 = -speed*ones(N) + SinosoidalVel(delta, pos1, pi)
 #vel = concatenate((vel1,vel2))
 #vel = array([-0. , 0.])
-vel = SinosoidalVel(0.01, pos, 0.0)
+vel = SinosoidalVel(0.005, pos, 0.0)
 
 # Plot histogram of velocity distribution
 #VelocityHistogram(vel, N, Tend)

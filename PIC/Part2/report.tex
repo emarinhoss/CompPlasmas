@@ -1,0 +1,85 @@
+\documentclass[12pt]{report}
+
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage[pdftex]{graphicx}
+\usepackage{color}
+
+\newcommand\dashedrule{\mbox{%
+  \solidrule[2mm]\hspace{2mm}\solidrule[2mm]\hspace{2mm}\solidrule[2mm]}}
+
+\begin{document}
+\title{AA 545 Kinetic Modeling\\ Vlasov-Poisson PIC\\ Part 2}
+\author{Eder Sousa}
+\date{\today}
+\maketitle
+
+This report shows results of a PIC code that evolves free streaming particles in phase space ($\mathbf{x}$, $\mathbf{v}_x$) and in one dimension.
+The Vlasov-Poisson system is used to evolve the system.
+\begin{equation}
+\frac{\partial f}{\partial t} + \mathbf{v}\cdot\frac{\partial f}{\partial\mathbf{x}} + \frac{q}{m}\mathbf{E}\frac{\partial f}{\partial\mathbf{v}} = 0
+\label{eq:vlasov}
+\end{equation}
+
+\begin{equation}
+\nabla^2\phi = - \frac{\rho_c}{\epsilon_o}
+\end{equation}
+
+The equation is normalized using,
+
+\begin{equation*}
+\mathbf{x} = \tilde{x}L, \qquad \mathbf{v}=\tilde{v}v_o, \qquad t=\tilde{t}\tau, \qquad\mathbf{E}=\tilde{E}E_o, \qquad f = \tilde{f}n_o
+\end{equation*}
+
+\begin{equation*}
+v_o=L/\tau, \qquad E_o = \frac{qn_oL}{\epsilon_o}
+\end{equation*}
+
+Substituting into eq.\ref{eq:vlasov} and multiplying by ($L/v_on_o$)
+\begin{equation}
+\frac{\partial \tilde{f}}{\partial \tilde{t}} + \tilde{v}\cdot\frac{\partial \tilde{f}}{\partial\tilde{x}} + \frac{q^2n_o\tau^2}{m\epsilon_o}\tilde{E}\frac{\partial\tilde{f}}{\partial\tilde{v}} = 0.
+\end{equation}
+Setting
+\begin{equation*}
+\frac{q^2n_o\tau^2}{m\epsilon_o} = 1 \Rightarrow \tau^2 = \frac{m\epsilon_o}{q^2n_o} = \frac{1}{\omega_{pe}^2},
+\end{equation*}
+where $\omega_{pe}$ is the electron plasma frequency and if the velocities are normalized by the thermal speed $v_o=v_{th}$,
+\begin{equation*}
+L = v_o\tau = \sqrt{\frac{\epsilon_o T}{q^2n_o}} = \lambda_d
+\end{equation*}
+and $\lambda_d$ is the Debye length.
+
+
+\begin{figure}
+\centering
+\includegraphics[scale=0.8]{part_a.png}
+\caption{Electric field energy history for two particles with no initial velocity. The oscillations have a period of $T\sim10.87$ which corresponds to a frequency of $\omega=0.578$ and the analytical plasma frequency is given as $\omega_{pe}=0.564$.}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[scale=0.8]{part_b.png}
+\caption{Kinetic energy history for two particles with symmetric velocity. The oscillations have a period of $T\sim15.94$ which corresponds to a frequency of $\omega=0.394$ and the analytical plasma frequency is given as $\omega_{pe}=0.564$.}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[scale=0.8]{part_b2.png}
+\caption{Kinetic energy history when particle trajectories cross.}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[scale=0.8]{part_c.png}
+\caption{Electric field energy history for 64 particles with velocities initialized by a small sinusoidal perturbation. The oscillations have a period of $T\sim4.41$ which corresponds to a frequency of $\omega=1.424$ and the analytical plasma frequency is given as $\omega_{pe}=3.192$.}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[scale=0.8]{part_c2.png}
+\caption{Deviation between the measured frequency versus the analytical plasma frequency to demonstrating the Leap-Frog instability.}
+\end{figure}
+\end{document}
